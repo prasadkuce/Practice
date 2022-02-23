@@ -14,8 +14,6 @@
         public List<Item> Randomize()
         {
             var preTestList = Items.Where(l => l.ItemType == ItemTypeEnum.PreTest).OrderBy(x => new Random().Next()).Take(2).ToList();
-            //foreach(var item in preTestList)
-            //    Items.Remove(item);
             var opsTestList = Items.Except(preTestList).OrderBy(x => new Random().Next()).ToList();
             
             var retVal = new List<Item>();
