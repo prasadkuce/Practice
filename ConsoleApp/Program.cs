@@ -1,9 +1,13 @@
 ﻿try
 {
-    Console.WriteLine("Enter a Number");
-    string? number = Console.ReadLine();
-    number = NumberToWords.ConvertAmount(double.Parse(number));
-    Console.WriteLine($"Number in words is {number}");
+    //Console.WriteLine("Enter a Number");
+    //string? number = Console.ReadLine();
+    //number = NumberToWords.ConvertAmount(double.Parse(number));
+    //Console.WriteLine($"Number in words is {number}");
+    var lst = new List<int>() { 1,2,3,4,5,6,7,8,9,10};
+    lst = lst.OrderBy(x => new Random().Next()).ToList();
+    foreach(var item in lst)    
+        Console.WriteLine(item);
     Console.ReadKey();
 
 }
