@@ -5,7 +5,7 @@ using System.Linq;
 namespace DemoTest.Core.Tests
 {
     [TestClass]
-    public class UnitTest1
+    public class DemoTestUnitTests
     {
         public List<Item> testItems = new List<Item>() {
                 new Item(){ItemId = 1, ItemType = ItemTypeEnum.Operational, Name = "Question1"},
@@ -20,7 +20,29 @@ namespace DemoTest.Core.Tests
                 new Item(){ItemId = 10, ItemType = ItemTypeEnum.PreTest, Name = "Question10"},
             };
         [TestMethod]
-        public void TestRandomize()
+        public void FailWithNullTestItemsException()
+        {
+            //Arrange
+            var testlet = new Testlet(1, "test1", null);
+            //Act
+            var ex = Assert.ThrowsException<System.Exception>(() => testlet.Randomize());
+            //Assert
+            if(ex != null && ex.Message.Equals("Testlet Items are not initialized."))
+                Assert.Fail();
+        }
+        [TestMethod]
+        public void TestEmptyTestItemsException()
+        {
+            //Arrange
+            var emptyItems = new List<Item>();
+            var testlet = new Testlet(1, "test1", emptyItems);
+            //Act
+            var ex = Assert.ThrowsException<System.Exception>(() => testlet.Randomize());
+            //Assert
+            Assert.AreEqual(ex.Message, "Testlet Items are empty. Add some testlet items");
+        }
+        [TestMethod]
+        public void TestRandomizeWithValidTestItems()
         {
             //Arrange
             var testlet = new Testlet(1, "test1", testItems);
@@ -33,7 +55,7 @@ namespace DemoTest.Core.Tests
             Assert.IsFalse(System.Linq.Enumerable.SequenceEqual(randTestItems, randTestItems2));
         }
         [TestMethod]
-        public void TestFirstAndSecondArePreTestItems()
+        public void TestFirstAndSecondTestItemsToBePreTestItems()
         {
             //Arrange
             var testlet = new Testlet(1, "test1", testItems);
@@ -44,7 +66,7 @@ namespace DemoTest.Core.Tests
             Assert.IsTrue(randTestItems.Take(2).Where(t => t.ItemType == ItemTypeEnum.Operational).Count() == 0);
         }
         [TestMethod]
-        public void TestRemainingPreTestItems()
+        public void TestLastTestItemsToBeOperationalItems()
         {
             //Arrange
             var testlet = new Testlet(1, "test1", testItems);
@@ -53,6 +75,36 @@ namespace DemoTest.Core.Tests
             //Assert
             Assert.IsTrue(randTestItems.Skip(2).Where(t => t.ItemType == ItemTypeEnum.PreTest).Count() == 2);
             Assert.IsTrue(randTestItems.Skip(2).Where(t => t.ItemType == ItemTypeEnum.Operational).Count() == 6);
+        }
+        [TestMethod]
+        public void TestNotEnoughPreTestItemsException()
+        {
+            //Arrange
+            var testlet = new Testlet(1, "test1", testItems);
+            testItems.RemoveAll(t => t.ItemType == ItemTypeEnum.PreTest);
+            //Act
+            var ex = Assert.ThrowsException<System.Exception>(() => testlet.Randomize());
+            //Assert
+            Assert.AreEqual(ex.Message, "There are not enough pretest items");
+        }
+        [TestMethod]
+        public void TestNotEnoughOprationalItemsException()
+        {
+            //Arrange
+            var testlet = new Testlet(1, "test1", testItems);
+            testItems.RemoveAll(t => t.ItemType == ItemTypeEnum.Operational);
+            //Act
+            var ex = Assert.ThrowsException<System.Exception>(() => testlet.Randomize());
+            //Assert
+            Assert.AreEqual(ex.Message, "There are not enough operational items");
+        }
+        [TestMethod]
+        public void FailWithRandomException()
+        {
+            //Arrange
+            var testlet = new Testlet(1, "test1", testItems);
+            //Asser
+            Assert.ThrowsException<System.Exception>(() => testlet.Randomize());
         }
     }
 }
